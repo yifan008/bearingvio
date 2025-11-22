@@ -22,5 +22,5 @@ Flag3 = True
 algorithms = ['ideal', 'ekf', 'tekf']
 
 # TIME_MARK = '2025-07-12 15:39:34'
-# TIME_MARK = '2025-11-22 21:19:59' # towards landmark
-TIME_MARK = '2025-11-22 21:49:35' # circle
+TIME_MARK = '2025-11-22 21:19:59' # towards landmark
+# TIME_MARK = '2025-11-22 21:49:35' # circle

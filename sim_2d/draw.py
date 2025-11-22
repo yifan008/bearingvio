@@ -358,10 +358,23 @@ if __name__ == '__main__':
 
     # bplot_ori['means'][algorithms.index(alg)].set_color(color_tables[alg])
     
-    plt_ker_ax.axhline(y=2, color=color_tables['ekf'], linestyle='--', linewidth=1)
-    plt_ker_ax.axhline(y=3, color=color_tables['tekf'], linestyle='--', linewidth=1)
-    plt_ker_ax.axhline(y=4, color=color_tables['ideal'], linestyle='--', linewidth=1)
-            
+    # plt_ker_ax.axhline(y=2, color=color_tables['ekf'], linestyle='--', linewidth=0.3, alpha=0.5)
+    # plt_ker_ax.axhline(y=3, color=color_tables['tekf'], linestyle='--', linewidth=0.3, alpha=0.5)
+    # plt_ker_ax.axhline(y=4, color=color_tables['ideal'], linestyle='--', linewidth=0.3, alpha=0.5)
+    
+    plt_ker_ax.axhline(y=2, color='gray', linestyle='--', linewidth=0.3, alpha=0.5)
+    plt_ker_ax.axhline(y=3, color='gray', linestyle='--', linewidth=0.3, alpha=0.5)
+    plt_ker_ax.axhline(y=4, color='gray', linestyle='--', linewidth=0.3, alpha=0.5)
+    
+    for i, (box, color) in enumerate(zip(bplot_ker['boxes'], colors)):
+      vertices = box.get_path().vertices
+      
+      left_x = vertices[0, 0]
+      right_x = vertices[1, 0]
+      
+      plt_ker_ax.axvline(x=left_x, color=colors[i], linestyle='--', linewidth=0.3, alpha=0.5)
+      plt_ker_ax.axvline(x=right_x, color=colors[i], linestyle='--', linewidth=0.3, alpha=0.5)
+      
     current_path = os.getcwd()
     plt_ker.savefig(current_path + "/figures/ker" + '.png', dpi=600, bbox_inches='tight')
 
