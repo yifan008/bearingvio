@@ -318,6 +318,8 @@ if __name__ == '__main__':
                 s_nees_pos[k] = dp.T @ np.linalg.inv(cov[0:2, 0:2]) @ dp
                 s_nees_psi[k] = dpsi **2 / cov[2, 2]
                 
+            ker_est = results[i][alg].history[len(results[i][alg].history) - 1]['ker']
+            
             save_path = '../sim_results' + '/' + t + '/BearingVIO' + str(i+1) + '/' 
 
             Path(save_path).mkdir(parents=True, exist_ok=True)
@@ -327,7 +329,7 @@ if __name__ == '__main__':
             np.savez(save_path + file_name, t = time_arr, px_est = px_est, py_est = py_est, psi_est = psi_est, ptx_est = ptx_est, pty_est = pty_est,
                     px_gt = px_gt, py_gt = py_gt, ptx_gt = ptx_gt, pty_gt = pty_gt, psi_gt = psi_gt, 
                     cov_p_est = cov_p_est, cov_psi_est = cov_psi_est, epos = epos, epsi = epsi, 
-                    nees = s_nees, nees_psi = s_nees_psi, nees_pos = s_nees_pos)
+                    nees = s_nees, nees_psi = s_nees_psi, nees_pos = s_nees_pos, ker_est = ker_est)
 
         rmse_pos[alg] += np.sum(pos_error)
         rmse_psi[alg] += np.sum(psi_error)

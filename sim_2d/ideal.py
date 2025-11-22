@@ -135,7 +135,7 @@ class Ideal_EKF():
 
         cov = self.robot_system.cov
 
-        self.robot_system.history.append({'px': np.copy(px), 'py': np.copy(py), 'psi': np.copy(psi), 'ptx': np.copy(ptx), 'pty': np.copy(pty), 'cov': np.copy(cov)})
+        self.robot_system.history.append({'px': np.copy(px), 'py': np.copy(py), 'psi': np.copy(psi), 'ptx': np.copy(ptx), 'pty': np.copy(pty), 'cov': np.copy(cov), 'ker': 5-np.linalg.matrix_rank(self.Wk)})
 
     def run(self):
         # initialize time

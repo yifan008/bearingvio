@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
     color_tables = {'ekf':'blue', 'ideal':'green', 'gt_t_p':'cyan', 'msc':'purple', 'tekf':'red', 'msc_ideal':'yellow', 'gt_t':'hotpink', 'odom':'yellow', 'gt':'purple', 'kdl2':'Moccasin', 'kdg2':'LavenderBlush', 'gt_p':'navy'}
     marker_tables = {'ekf':'o', 'ideal':'h', 'inv':'s', 'msc':'^', 'tekf':'p', 'msc_ideal':'3', 'kdp':'*', 'gt':'2', 'odom':'o', 'kdg2':'s', 'ukf':'*', 'kdl2': 's'}
-    label_tables = {'ekf':'EKF', 'ideal':'Ideal', 'inv':'I-EKF', 'msc':'MSC', 'tekf':'T-EKF', 'ukf':'UKF', 'kdp':'T-EKF (T1)', 'odom':'ODOM', 'msc_ideal':'MSC_I'} 
+    label_tables = {'ekf':'EKF', 'ideal':'Actual', 'inv':'I-EKF', 'msc':'MSC', 'tekf':'T-EKF', 'ukf':'UKF', 'kdp':'T-EKF (T1)', 'odom':'ODOM', 'msc_ideal':'MSC_I'} 
     style_table = {'ekf':'-', 'ideal':'--', 'inv':'-.', 'ukf':'-', 'tekf':':', 'msc':':', 'msc_ideal':':', 'kdp':':', 'odom':':'}
 
     iter_num = ITER_NUM
@@ -56,6 +56,8 @@ if __name__ == '__main__':
     nees_avg = dict()
     nees_pos = dict()
     nees_psi = dict()
+
+    ker = dict()
 
     for i in range(iter_num):
       if DRAW_BOUNDS:
@@ -101,6 +103,8 @@ if __name__ == '__main__':
         psi_est = data['psi_est']
         ptx_est = data['ptx_est']
         pty_est = data['pty_est']
+  
+        ker_est = data['ker_est']
 
         cov_p_est = data['cov_p_est']
         cov_psi_est = data['cov_psi_est']
@@ -120,12 +124,15 @@ if __name__ == '__main__':
           nees_avg[alg] = s_nees
           nees_pos[alg] = s_nees_pos
           nees_psi[alg] = s_nees_psi
+          ker[alg] = []
+          ker[alg].append(ker_est)
         else:
           rmse_pos[alg] += pos_error
           rmse_psi[alg] += psi_error
           nees_avg[alg] += s_nees
           nees_pos[alg] += s_nees_pos
           nees_psi[alg] += s_nees_psi
+          ker[alg].append(ker_est)
 
         if DRAW_BOUNDS:
           N_step = int(N / 100)
@@ -311,5 +318,51 @@ if __name__ == '__main__':
       plt_traj_ax.plot(px_est[0], py_est[0], color=color_tables[alg], marker = 'o')
         
     plt_traj_ax.legend(loc = 'upper left', frameon=True, ncol = 4, prop = {'size':10})
+
+    plt_ker = plt.figure(figsize=(6, 4))
+    plt_ker_ax = plt.gca()
+    plt.ylabel(r'$\rm rank$', fontsize=14)
+    plt_ker_ax.tick_params(axis='both', labelsize=14)
+
+    data_ker = []
+    labels = []
+    colors = []
+
+    for alg in algorithms:
+        data_ker.append(ker[alg])
+        labels.append(label_tables[alg])
+        colors.append(color_tables[alg])
+
+    alg = 'ideal'
+
+    # color_tables[alg]
+    mean = {'linestyle':'-','color':color_tables[alg], 'markersize':10}
+
+    median = {'linestyle':'--','color':'purple','linewidth':3}
+
+    showfilter = False
+    shownortch = True
+
+    bplot_ker = plt_ker_ax.boxplot(data_ker, notch=True, widths = 0.4, vert=True, showfliers=False, showmeans=True, labels=labels,
+    boxprops=dict(alpha=0.7, linewidth=2), whiskerprops=dict(linewidth=2), capprops=dict(linewidth=2))
+    
+    for alg in algorithms:
+      bplot_ker['boxes'][algorithms.index(alg)].set_color(color_tables[alg])
+      
+      for i in range(2):
+        bplot_ker['caps'][2*algorithms.index(alg)].set_color(color_tables[alg])
+        bplot_ker['caps'][2*algorithms.index(alg)+1].set_color(color_tables[alg])
+      
+        bplot_ker['whiskers'][2*algorithms.index(alg)].set_color(color_tables[alg])
+        bplot_ker['whiskers'][2*algorithms.index(alg)+1].set_color(color_tables[alg])
+
+    # bplot_ori['means'][algorithms.index(alg)].set_color(color_tables[alg])
+    
+    plt_ker_ax.axhline(y=2, color=color_tables['ekf'], linestyle='--', linewidth=1)
+    plt_ker_ax.axhline(y=3, color=color_tables['tekf'], linestyle='--', linewidth=1)
+    plt_ker_ax.axhline(y=4, color=color_tables['ideal'], linestyle='--', linewidth=1)
+            
+    current_path = os.getcwd()
+    plt_ker.savefig(current_path + "/figures/ker" + '.png', dpi=600, bbox_inches='tight')
 
     plt.show()
